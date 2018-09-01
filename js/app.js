@@ -7,6 +7,7 @@ const ul = document.querySelector('.boxes');
 const Boxes = document.querySelectorAll('.boxes .box');
 const allBox = [];
 let win = false; //this is the status of the game, which now is false => there is no winner yet
+let draw = false; //for the screenrefresher I will use it
 let whoTurns = 2;  // if the value is 1, O turns => if 2, x turns
 let Onumbers = []; // array which holds, the O's moves as an index value
 let Xnumbers = []; // array which holds, the X's moves as an index value
@@ -71,6 +72,78 @@ function addNumber () {
   player.push(event.target);
 
 }
+function checkDraw (){
+
+ let drawArr = [];
+
+ allBox.forEach(box =>  {
+
+  if (box.className !== 'box'){
+
+      drawArr.push(box);
+  }
+  if (drawArr.length === 9 && win === false){
+    hideElement(board);
+    showElement(screenWin);
+    screenWin.className = "screen screen-win screen-win-tie";
+    messageP.textContent = `It's a Tie'`;
+    drawArr.length = 0; //when it comes to new game it will be empty again
+
+  }
+
+});
+
+}
+function WinCheck (playerNumber) { //create a function for helps track the winner numbers of all player
+  // winNUmb is the winner combinations on the board => each element in this array is a winner combination from 3 numbers which represents where is the click located
+  //playerNumber is the variable which collets the moves for both player
+  //checkWin is the final array which will holds the filtered numbers of the player moves
+
+  for (let i= 0; i < winNumb.length; i+=1) {
+
+  const checkWin = playerNumber.concat(winNumb[i]).filter(function(number,index,array){
+
+    return index !== array.indexOf(number); // here we filtered for only the duplicates because if we concat the actual playermoves with the winner combinations, the duplicated values
+    // will show as that the player has the same winner numbers or not
+  });
+
+    if (checkWin.length === 3){ //if there is 3 duplicated value after the concat, it means that the current player has won the game
+      win = true; //set the gamestatus to win
+      if (playerNumber === Onumbers){
+        hideElement(board);
+        showElement(screenWin);
+        screenWin.className = "screen screen-win screen-win-one";
+        messageP.textContent = 'Winner';
+      }
+      if (playerNumber !== Onumbers){
+        console.log('az x nyert');
+        hideElement(board);
+        showElement(screenWin);
+        screenWin.className = "screen screen-win screen-win-two";
+        messageP.textContent = 'Winner';
+      }
+      break;
+    }
+  }
+
+}
+
+function newGame () {
+
+hideElement(screenWin);
+showElement(board);
+whoTurns = 1; // player O starts again
+win = false;
+player1.className = 'players active'; //make the player1 highlighted at the top corner
+player2.className = 'players'; //make the player2 unhighlighted at the top corner
+//remove the highlight from the checkboxes
+allBox.forEach(box => box.className = 'box');
+allBox.forEach(box => box.style.backgroundImage = '');
+//reset all variables,arrays
+Onumbers.length = 0;//set the Onumbers array to zero
+Xnumbers.length = 0;//set the Onumbers array to zero
+
+}
 
 
 // With this function we make the O and X alternates. With the mouseclick we generate the turns and change the whoTurns variable at the top.
@@ -92,11 +165,14 @@ function highlightOrNot (element, eventlistener){
   //EVENT IS CLICK
 
     if (whoTurns === 1 && eventlistener === 'click') {
-      //add element to the proper busket
 
       //check that the box is empty or note
       if (event.target.className === 'box'){
         event.target.className = 'box box-filled-1'; //make the box O marked
+        //check for draw
+        checkDraw();
+        //check for winners
+        WinCheck(Onumbers);
             player2.className = 'players active'; //make the player2 highlighted at the top corner
             player1.className = 'players'; //unhighlight player 1
             whoTurns = 2; // alternates the turn varible to X
@@ -117,9 +193,15 @@ function highlightOrNot (element, eventlistener){
     //EVENT IS CLICK
 
      if (whoTurns === 2 && eventlistener === 'click') {
+
+
       //check that the box is empty or note
       if (event.target.className ==='box' ){
         event.target.className = 'box box-filled-2'; //make the box O marked
+        //check for draw
+        checkDraw();
+        //check for winners
+        WinCheck(Xnumbers);
 
         player1.className = 'players active'; //make the player1 highlighted at the top corner
         player2.className = 'players'; //unhighlight player 2
@@ -142,11 +224,30 @@ const startheader = document.getElementById('startheader');
 buildElement('H1',startheader,'Tic Tac Toe');
 buildElement('A',startheader,'Start game','startbutton','button','#');
 const startbutton = document.getElementById('startbutton');
+//Creating the winning-screen elements
+buildElement('DIV',body,'', "finish","screen screen-win");
+const screenWin = document.getElementById('finish');
+buildElement('HEADER',screenWin,'','winheader');
+const winHeader = document.getElementById('winheader');
+buildElement('H1',winHeader,'Tic Tac Toe');
+buildElement('P',winHeader,'','Pmessage','message');
+const messageP = document.getElementById('Pmessage');
+buildElement('A',winHeader,'New game','newgamebutton','button','#');
+const newGameButton = document.getElementById('newgamebutton');
+
+newGameButton.addEventListener('click', (event)=>{
+
+  newGame();
+})
 
 // I. -------------------------------------------------When the page loads, the startup screen should appear.------------------------------------------------------------------
-window.onload = function () {
-        hideElement(board); //hide the board screen
-    }
+
+  window.onload = function () {
+          hideElement(board); //hide the board screen
+          hideElement(screenWin); //hide the win-screen
+      }
+
+
 
 // II. --------------------------When the player clicks the start button the start screen disappears, the board appears, and the game begins  ------------------------------------------
 startbutton.addEventListener('click', () => {
@@ -167,21 +268,3 @@ highlightOrNot(ul, 'mouseout');
 highlightOrNot(ul, 'click');
 
 // IV. -----------------------------------------------------------------  GAME ENDING  --------------------------------------------------------------------------------------------
-
-for (let i= 0; i < winNumb.length; i+=1) {
-
-const checkWin = arrO.concat(coolNum[i]).filter(function(number,index,array){
-
-  return index !== array.indexOf(number);
-});
-
-  if (checkWin.length === 3){
-    console.log(`Kiraly vagy Istenem a nyeroszamaid most ezek: ${unique}`);
-    win = true;
-    break;
-  }
-}
-
-if (win === false) {
-console.log('Sajnalom de nem nyertel');
-}
