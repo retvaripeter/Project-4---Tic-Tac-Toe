@@ -4,7 +4,35 @@ const body = document.querySelector('body');
 const player1Highlight = document.getElementById('player1');
 const player2Highlight = document.getElementById('player2');
 const ul = document.querySelector('.boxes');
-let whoTurns; // if the value is 1, O turns => if 2, x turns
+const Boxes = document.querySelectorAll('.boxes .box');
+const allBox = [];
+let whoTurns = 2;  // if the value is 1, O turns => if 2, x turns
+let Onumbers = [];
+let Xnumbers = [];
+
+// Get all boxelement (li-s) and push it to the array allBox
+Boxes.forEach(x=> allBox.push(x));
+
+// put the index of the target event to the index variable
+for (let i= 0; i < Boxes.length ; i+=1){
+
+  Boxes[i].onclick = function (){
+    const index = allBox.indexOf(this);
+
+    if (whoTurns === 1){ // if O turns, push the index to the O busket
+
+      Onumbers.push(index+1);
+    } else { // if not push the index value to the X busket
+
+      Xnumbers.push(index+1);
+
+    }
+
+
+  }
+
+}
+
 
 //FUNCTIONS
 
@@ -29,6 +57,14 @@ function hideElement (element) { //hide the element
   element.style.display = 'none';
 
 }
+
+function addNumber () {
+
+  player.push(event.target);
+
+}
+
+
 // With this function we make the O and X alternates. With the mouseclick we generate the turns and change the whoTurns variable at the top.
 // With mouseover and out we higlighted the possible choices for the player who turns, but just for the empty boxes!
 function highlightOrNot (element, eventlistener){
@@ -48,13 +84,14 @@ function highlightOrNot (element, eventlistener){
   //EVENT IS CLICK
 
     if (whoTurns === 1 && eventlistener === 'click') {
+      //add element to the proper busket
+
       //check that the box is empty or note
       if (event.target.className === 'box'){
         event.target.className = 'box box-filled-1'; //make the box O marked
-
-        player2.className = 'players active'; //make the player2 highlighted at the top corner
-        player1.className = 'players'; //unhighlight player 1
-        whoTurns = 2; // alternates the turn varible to X
+            player2.className = 'players active'; //make the player2 highlighted at the top corner
+            player1.className = 'players'; //unhighlight player 1
+            whoTurns = 2; // alternates the turn varible to X
 
       }
     }
@@ -120,3 +157,5 @@ highlightOrNot(ul, 'mouseover');
 highlightOrNot(ul, 'mouseout');
   //fill the box with the actual player's svg
 highlightOrNot(ul, 'click');
+
+// IV. -----------------------------------------------------------------  GAME ENDING  --------------------------------------------------------------------------------------------
