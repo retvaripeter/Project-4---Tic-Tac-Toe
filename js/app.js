@@ -6,12 +6,25 @@ const player2Highlight = document.getElementById('player2');
 const ul = document.querySelector('.boxes');
 const Boxes = document.querySelectorAll('.boxes .box');
 const allBox = [];
+let win = false; //this is the status of the game, which now is false => there is no winner yet
 let whoTurns = 2;  // if the value is 1, O turns => if 2, x turns
-let Onumbers = [];
-let Xnumbers = [];
+let Onumbers = []; // array which holds, the O's moves as an index value
+let Xnumbers = []; // array which holds, the X's moves as an index value
+const winNumb = [  // this array holds the winner combinatios (2 diagonal, 3 vertical and 3 horizontal):
+
+[1,2,3],
+[4,5,6],
+[7,8,9],
+[1,4,7],
+[2,5,8],
+[3,6,9],
+[1,5,9],
+[7,5,3]
+
+];
 
 // Get all boxelement (li-s) and push it to the array allBox
-Boxes.forEach(x=> allBox.push(x));
+Boxes.forEach(li=> allBox.push(li));
 
 // put the index of the target event to the index variable
 for (let i= 0; i < Boxes.length ; i+=1){
@@ -19,20 +32,15 @@ for (let i= 0; i < Boxes.length ; i+=1){
   Boxes[i].onclick = function (){
     const index = allBox.indexOf(this);
 
-    if (whoTurns === 1){ // if O turns, push the index to the O busket
+      if (whoTurns === 1){ // if O turns, push the index to the O busket
+        Onumbers.push(index+1);
 
-      Onumbers.push(index+1);
-    } else { // if not push the index value to the X busket
+      } else { // if not push the index value to the X busket
+        Xnumbers.push(index+1);
 
-      Xnumbers.push(index+1);
-
-    }
-
-
+      }
   }
-
 }
-
 
 //FUNCTIONS
 
@@ -159,3 +167,21 @@ highlightOrNot(ul, 'mouseout');
 highlightOrNot(ul, 'click');
 
 // IV. -----------------------------------------------------------------  GAME ENDING  --------------------------------------------------------------------------------------------
+
+for (let i= 0; i < winNumb.length; i+=1) {
+
+const checkWin = arrO.concat(coolNum[i]).filter(function(number,index,array){
+
+  return index !== array.indexOf(number);
+});
+
+  if (checkWin.length === 3){
+    console.log(`Kiraly vagy Istenem a nyeroszamaid most ezek: ${unique}`);
+    win = true;
+    break;
+  }
+}
+
+if (win === false) {
+console.log('Sajnalom de nem nyertel');
+}
