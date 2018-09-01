@@ -86,7 +86,7 @@ function checkDraw (){
     hideElement(board);
     showElement(screenWin);
     screenWin.className = "screen screen-win screen-win-tie";
-    messageP.textContent = `It's a Tie'`;
+    messageP.textContent = `It's a Tie`;
     drawArr.length = 0; //when it comes to new game it will be empty again
 
   }
