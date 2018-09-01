@@ -7,7 +7,6 @@ const ul = document.querySelector('.boxes');
 const Boxes = document.querySelectorAll('.boxes .box');
 const allBox = [];
 let win = false; //this is the status of the game, which now is false => there is no winner yet
-let draw = false; //for the screenrefresher I will use it
 let whoTurns = 2;  // if the value is 1, O turns => if 2, x turns
 let Onumbers = []; // array which holds, the O's moves as an index value
 let Xnumbers = []; // array which holds, the X's moves as an index value
@@ -23,25 +22,6 @@ const winNumb = [  // this array holds the winner combinatios (2 diagonal, 3 ver
 [7,5,3]
 
 ];
-
-// Get all boxelement (li-s) and push it to the array allBox
-Boxes.forEach(li=> allBox.push(li));
-
-// put the index of the target event to the index variable
-for (let i= 0; i < Boxes.length ; i+=1){
-
-  Boxes[i].onclick = function (){
-    const index = allBox.indexOf(this);
-
-      if (whoTurns === 1){ // if O turns, push the index to the O busket
-        Onumbers.push(index+1);
-
-      } else { // if not push the index value to the X busket
-        Xnumbers.push(index+1);
-
-      }
-  }
-}
 
 //FUNCTIONS
 
@@ -67,26 +47,21 @@ function hideElement (element) { //hide the element
 
 }
 
-function addNumber () {
+function checkDraw (){ //this function helps to decide it the ending game
 
-  player.push(event.target);
+ let drawArr = []; //creates an empty array which will holds all the non-empty boxes
 
-}
-function checkDraw (){
+ allBox.forEach(box =>  { //iterate all elements/boxes
 
- let drawArr = [];
-
- allBox.forEach(box =>  {
-
-  if (box.className !== 'box'){
+  if (box.className !== 'box'){ //if the box is filled then put it to the darArr array
 
       drawArr.push(box);
   }
-  if (drawArr.length === 9 && win === false){
+  if (drawArr.length === 9 && win === false){ // draw => all box are filled and the nobody has 3 similar symbol in a row or in diagonal
     hideElement(board);
     showElement(screenWin);
-    screenWin.className = "screen screen-win screen-win-tie";
-    messageP.textContent = `It's a Tie`;
+    screenWin.className = "screen screen-win screen-win-tie"; //add the draw css style to the screenWin
+    messageP.textContent = `It's a Tie`; // add message with changing the textcontent of the P element which we already created
     drawArr.length = 0; //when it comes to new game it will be empty again
 
   }
@@ -112,14 +87,13 @@ function WinCheck (playerNumber) { //create a function for helps track the winne
       if (playerNumber === Onumbers){
         hideElement(board);
         showElement(screenWin);
-        screenWin.className = "screen screen-win screen-win-one";
+        screenWin.className = "screen screen-win screen-win-one"; //change the screen with the css of win one by rewrite the classname with JS
         messageP.textContent = 'Winner';
       }
       if (playerNumber !== Onumbers){
-        console.log('az x nyert');
         hideElement(board);
         showElement(screenWin);
-        screenWin.className = "screen screen-win screen-win-two";
+        screenWin.className = "screen screen-win screen-win-two"; //change the screen with the css of win two by rewrite the classname with JS
         messageP.textContent = 'Winner';
       }
       break;
@@ -128,15 +102,15 @@ function WinCheck (playerNumber) { //create a function for helps track the winne
 
 }
 
-function newGame () {
+function newGame () { //it is only activated when the newgame button is clicked by the user
 
 hideElement(screenWin);
 showElement(board);
 whoTurns = 1; // player O starts again
-win = false;
+win = false; // set the gamestatus again
 player1.className = 'players active'; //make the player1 highlighted at the top corner
 player2.className = 'players'; //make the player2 unhighlighted at the top corner
-//remove the highlight from the checkboxes
+//remove the highlight from the checkboxes:
 allBox.forEach(box => box.className = 'box');
 allBox.forEach(box => box.style.backgroundImage = '');
 //reset all variables,arrays
@@ -144,7 +118,6 @@ Onumbers.length = 0;//set the Onumbers array to zero
 Xnumbers.length = 0;//set the Onumbers array to zero
 
 }
-
 
 // With this function we make the O and X alternates. With the mouseclick we generate the turns and change the whoTurns variable at the top.
 // With mouseover and out we higlighted the possible choices for the player who turns, but just for the empty boxes!
@@ -217,7 +190,7 @@ function highlightOrNot (element, eventlistener){
 //Creating HTML elements for starts and win
 
 //Creating the sreen-start elements
-buildElement('DIV',body,'', "start","screen screen-start");
+buildElement('DIV',body,'', "start","screen screen-start"); // you can find the properties meaning at the build element function on line: 28
 const screenStart = document.getElementById('start');
 buildElement('HEADER',screenStart,'','startheader');
 const startheader = document.getElementById('startheader');
@@ -235,7 +208,7 @@ const messageP = document.getElementById('Pmessage');
 buildElement('A',winHeader,'New game','newgamebutton','button','#');
 const newGameButton = document.getElementById('newgamebutton');
 
-newGameButton.addEventListener('click', (event)=>{
+newGameButton.addEventListener('click', (event)=>{ // add eventlistener to the newGameButton
 
   newGame();
 })
@@ -246,8 +219,6 @@ newGameButton.addEventListener('click', (event)=>{
           hideElement(board); //hide the board screen
           hideElement(screenWin); //hide the win-screen
       }
-
-
 
 // II. --------------------------When the player clicks the start button the start screen disappears, the board appears, and the game begins  ------------------------------------------
 startbutton.addEventListener('click', () => {
@@ -267,4 +238,25 @@ highlightOrNot(ul, 'mouseout');
   //fill the box with the actual player's svg
 highlightOrNot(ul, 'click');
 
-// IV. -----------------------------------------------------------------  GAME ENDING  --------------------------------------------------------------------------------------------
+// This code below helps to collect the player's move
+
+// Get all boxelement (li-s) and push it to the array allBox
+Boxes.forEach(li=> allBox.push(li));
+
+// loop trough all element. If any element from the boxes activated by a click the index of the target will added to the index variable
+for (let i= 0; i < Boxes.length ; i+=1){
+
+  Boxes[i].onclick = function (){
+    const index = allBox.indexOf(this); //put the index of the target event to the index variable
+
+      if (whoTurns === 1){ // if O turns, push the index to the O busket
+        Onumbers.push(index+1);
+
+      } else { // if not push the index value to the X busket
+        Xnumbers.push(index+1);
+
+      }
+  }
+}
+
+// IV. -----------------------------------------------------------------  GAME OVER :)  --------------------------------------------------------------------------------------------
