@@ -23,6 +23,8 @@ const winNumb = [  // this array holds the winner combinatios (2 diagonal, 3 ver
 
 ];
 
+Boxes.forEach(li=> allBox.push(li));
+
 //FUNCTIONS
 
 function buildElement (etype,father,text,id,classname,href) { //buid up a function for creating elements with the usual parameters
@@ -134,10 +136,16 @@ function highlightOrNot (element, eventlistener){
         if (whoTurns === 1 && eventlistener === 'mouseout') { //if O turns and the event is mouseout clear the box
           event.target.style.backgroundImage = "";
         }
-    }
+
   //EVENT IS CLICK
 
     if (whoTurns === 1 && eventlistener === 'click') {
+
+       //add the usermove to the proper Y  basket array
+
+      const index = allBox.indexOf(event.target); //put the index of the target event to the index variable
+
+            Onumbers.push(index+1); // push the index +1 to the O busket
 
       //check that the box is empty or note
       if (event.target.className === 'box'){
@@ -152,6 +160,7 @@ function highlightOrNot (element, eventlistener){
 
       }
     }
+  }
 
     //X is turning ------- EVENT IS MOUSEOVER OR MOUSEOUT
      if (event.target.className ==='box' ){ //check if the box is empty (=> the classname is not box filled 1 or 2)
@@ -162,27 +171,32 @@ function highlightOrNot (element, eventlistener){
          if (whoTurns === 2 && eventlistener === 'mouseout') { //if X turns and the event is mouseout clear the box
           event.target.style.backgroundImage = "";
         }
-      }
+
     //EVENT IS CLICK
 
      if (whoTurns === 2 && eventlistener === 'click') {
 
+         //add the usermove to the proper X basket array
 
-      //check that the box is empty or note
-      if (event.target.className ==='box' ){
-        event.target.className = 'box box-filled-2'; //make the box O marked
-        //check for draw
-        checkDraw();
-        //check for winners
-        WinCheck(Xnumbers);
+         const index = allBox.indexOf(event.target); //put the index of the target event to the index variable
 
-        player1.className = 'players active'; //make the player1 highlighted at the top corner
-        player2.className = 'players'; //unhighlight player 2
-        whoTurns = 1; // alternates the turn varible to X
+               Xnumbers.push(index+1); // push the index +1 to the X busket
+
+        //check that the box is empty or note
+        if (event.target.className ==='box' ){
+          event.target.className = 'box box-filled-2'; //make the box O marked
+          //check for draw
+          checkDraw();
+          //check for winners
+          WinCheck(Xnumbers);
+
+          player1.className = 'players active'; //make the player1 highlighted at the top corner
+          player2.className = 'players'; //unhighlight player 2
+          whoTurns = 1; // alternates the turn varible to X
+      }
+
     }
-
-  }
-
+}
   });
 
 }
@@ -240,23 +254,28 @@ highlightOrNot(ul, 'click');
 
 // This code below helps to collect the player's move
 
-// Get all boxelement (li-s) and push it to the array allBox
-Boxes.forEach(li=> allBox.push(li));
-
-// loop trough all element. If any element from the boxes activated by a click the index of the target will added to the index variable
-for (let i= 0; i < Boxes.length ; i+=1){
-
-  Boxes[i].onclick = function (){
-    const index = allBox.indexOf(this); //put the index of the target event to the index variable
-
-      if (whoTurns === 1){ // if O turns, push the index to the O busket
-        Onumbers.push(index+1);
-
-      } else { // if not push the index value to the X busket
-        Xnumbers.push(index+1);
-
-      }
-  }
-}
+// // Get all boxelement (li-s) and push it to the array allBox
+// Boxes.forEach(li=> allBox.push(li));
+//
+// // loop trough all element. If any element from the boxes activated by a click the index of the target will added to the index variable
+// for (let i= 0; i < Boxes.length ; i+=1){
+//
+//
+//
+//   Boxes[i].addEventListener('click', (event) =>{
+//
+//   Boxes[i].removeEventListener('click',this);
+//
+//     const index = allBox.indexOf(event.target); //put the index of the target event to the index variable
+//
+//       if (whoTurns === 1){ // if O turns, push the index to the O busket
+//         Onumbers.push(index+1);
+//
+//       } else { // if not push the index value to the X busket
+//         Xnumbers.push(index+1);
+//
+//       }
+//   });
+// }
 
 // IV. -----------------------------------------------------------------  GAME OVER :)  --------------------------------------------------------------------------------------------
